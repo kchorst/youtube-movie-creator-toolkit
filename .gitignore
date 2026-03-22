@@ -1,0 +1,39 @@
+# ------------------------------------------------------------
+# CatsofTravels Pipeline — .gitignore
+# ------------------------------------------------------------
+
+# Personal config — contains your local paths and settings
+cot_config.json
+
+# Google OAuth credentials — NEVER commit these
+client_secrets.json
+token.json
+
+# Pipeline data — personal channel data
+youtube_uploads.csv
+youtube_uploads.csv.bak
+upload_log.json
+upload_log.txt
+quota_log.json
+seeds.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
