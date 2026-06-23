@@ -1,70 +1,131 @@
-# YouTube Video Toolkit
+# YouTube Movie Creator Toolkit
 
-A GUI-first toolkit for creating slideshow-style YouTube videos, adding sound to existing movies, preparing metadata, uploading, managing playlists, reviewing analytics, and editing live metadata.
+A GUI-first desktop toolkit for turning media folders into YouTube-ready videos, adding sound to existing movies, preparing metadata, uploading to YouTube, managing playlists, reviewing analytics, and editing live metadata.
 
-## What this build fixes
+This project is designed to work alongside **Audio Prep Suite** without bundling or importing its audio-processing dependencies. YouTube video creation lives here; deeper audio preparation lives in Audio Prep Suite.
 
-- Portable settings for source folders, output folders, audio folders, FFmpeg, FFprobe, YouTube OAuth files, Audio Prep Suite, and Local LLM endpoints.
-- Audio Prep Suite is treated as a separate optional app. A top-band launcher opens it when found; the old right-side duplicate panel and internal audio-tool buttons were removed.
-- Priority video workflows are exposed directly: create one movie from a media folder, batch-create movies from folders, add sound to an existing movie, and batch-add sound to movies.
-- Adding sound to existing movies is non-destructive and saves new `*_with_audio.mp4` outputs.
-- Local LLM support is provider-neutral. The toolkit can auto-detect common local endpoints for llama-server, LM Studio, Ollama, or a saved custom OpenAI-compatible endpoint.
-- Legacy channel-specific labels were removed from user-facing UI/docs.
-- Private config, OAuth token files, logs, generated runners, caches, and last-run artifacts are excluded from the release-clean package.
+## Core features
 
-## Start
+- **Create Movie from Media Folder** — select one folder of images/clips, optionally auto-detect audio, and render one MP4.
+- **Batch Create Movies from Folders** — each immediate subfolder becomes its own video.
+- **Add Sound to Existing Movie** — select an existing video and audio file, then save a non-destructive `*_with_audio.mp4` output.
+- **Batch Add Sound to Movies** — process multiple videos with matching/same-folder audio or one selected audio file.
+- **YouTube metadata tools** — prepare, review, and edit titles, descriptions, tags, and related metadata.
+- **YouTube upload tools** — upload prepared videos using your own OAuth credentials.
+- **Playlist and analytics tools** — manage uploaded content and review performance.
+- **Audio Prep Suite launcher** — discover and launch Audio Prep Suite as a separate app.
+- **Local LLM support** — optional provider-neutral endpoint discovery for llama-server, LM Studio, Ollama, or a custom OpenAI-compatible endpoint.
 
-Run:
+## What changed in the refactor
+
+- Removed old channel-specific UI/docs language.
+- Removed hardcoded personal Windows paths from runtime settings.
+- Added persistent user-configurable paths for media folders, output folders, audio folders, FFmpeg/FFprobe, YouTube OAuth files, Audio Prep Suite, and Local LLM settings.
+- Replaced the old LM Studio-only check with a general **LLM Check**.
+- Replaced old internal audio-tool launching with a clean external **Audio Prep Suite** bridge.
+- Promoted the main user workflows into the launcher UI.
+- Added non-destructive audio-to-video workflows.
+- Added release-clean packaging rules so OAuth tokens, private configs, logs, caches, and generated files are not published.
+
+## Install
+
+1. Clone or download the repository.
+2. Install Python dependencies:
+
+```bat
+python -m pip install -r requirements.txt
+```
+
+3. Install FFmpeg and FFprobe, or use **Settings** to browse to their executables.
+4. Run the launcher:
 
 ```bat
 python master_launcher.py
 ```
 
-Use **Settings** to configure folders, YouTube OAuth files, Audio Prep Suite location, and optional Local LLM settings.
+## First-run setup
 
-Use **Admin → Toolkit Check** to validate paths, FFmpeg/FFprobe, YouTube auth files, Local LLM status, disk space, and memory.
+Open **Settings** and configure:
 
+- Source pictures/media folder
+- Output videos folder
+- Audio/music folder
+- FFmpeg executable
+- FFprobe executable
+- YouTube `client_secrets.json`
+- YouTube `token.json`, if already authorized
+- Optional Audio Prep Suite folder
+- Optional Local LLM endpoint/model
 
-## Priority video workflows
-
-The launcher exposes four first-class video workflows:
-
-- **Create Movie from Media Folder** — choose one folder of images/clips, auto-detect or select audio, and render one MP4.
-- **Batch Create Movies from Folders** — each immediate subfolder becomes one MP4. Audio can be detected per folder or selected once for all.
-- **Add Sound to Existing Movie** — choose an existing movie and audio file; output is saved as `*_with_audio.mp4`.
-- **Batch Add Sound to Movies** — scan a folder of movies and add matching/same-folder audio or one selected audio file.
-
-Original media files are not modified.
+Then run **Admin → Toolkit Check**.
 
 ## Audio Prep Suite integration
 
-Audio Prep Suite is optional and installed separately. The launcher looks for it in sibling folders first. If it is not found, use **Settings → Find** or **Browse** to select the Audio Prep Suite app folder.
+Audio Prep Suite is optional and installed separately. The YouTube Movie Creator Toolkit searches sibling folders and saved settings for a runnable Audio Prep Suite launcher.
 
-A valid Audio Prep Suite folder should contain a runnable app marker such as `main.py`, `launcher.py`, `audio_prep_suite.py`, `launch.bat`, or an app executable. The YouTube Toolkit should not require `librosa`; Audio Prep Suite should install its own dependencies.
+A valid Audio Prep Suite folder may contain one of these app markers:
+
+- `main.py`
+- `launcher.py`
+- `audio_prep_suite.py`
+- `launch.bat`
+- an Audio Prep Suite executable
+
+The YouTube toolkit should not require `librosa`. If Audio Prep Suite reports `librosa` missing, repair Audio Prep Suite by installing its own requirements into the same Python environment used to launch Audio Prep Suite.
 
 ## Local LLM integration
 
-Local LLM is optional. If enabled, the toolkit checks:
+Local LLM is optional. The toolkit can check common local endpoints:
 
-- llama-server / llama.cpp at `http://127.0.0.1:8080`
-- LM Studio at `http://127.0.0.1:1234`
-- Ollama at `http://127.0.0.1:11434`
-- any saved custom endpoint
+- llama-server / llama.cpp: `http://127.0.0.1:8080`
+- LM Studio: `http://127.0.0.1:1234`
+- Ollama: `http://127.0.0.1:11434`
+- Custom OpenAI-compatible endpoint
 
-If no endpoint is running, metadata tools should still support manual editing.
+If no Local LLM is running, metadata tools should still support manual editing.
 
-## Private files
+## Privacy and GitHub safety
 
-Do not commit or share:
+Do not commit or publish private runtime files:
 
 - `client_secrets.json`
 - `token.json`
 - `cot_config.json`
 - `master_config.json`
-- logs, caches, generated runners, and last-run JSON files
+- logs
+- caches
+- generated launchers
+- last-run JSON files
 
 Use the `.example.json` files as templates for new users.
 
-## Audio Prep bridge design
+Before pushing to GitHub, check:
 
-YouTube Video Toolkit can launch Audio Prep Suite and passes `YT_TOOLKIT_PATH` so Audio Prep can discover the toolkit. Audio Prep dependencies such as `librosa` stay inside Audio Prep Suite. Future Audio Prep CLI commands can be called through `cot_core/audio_prep_bridge.py` without importing Audio Prep internals.
+```bat
+git ls-files | findstr /i "token.json client_secrets.json cot_config.json master_config.json"
+```
+
+That command should return nothing.
+
+## Recommended workflow
+
+1. Prepare or collect images/clips in a folder.
+2. Add one audio file to the same folder, or choose an audio file manually.
+3. Use **Create Movie from Media Folder**.
+4. Review the created MP4.
+5. Use metadata/upload tools when ready.
+
+For existing videos, use **Add Sound to Existing Movie** or **Batch Add Sound to Movies**.
+
+
+## License
+
+This project is source-available for noncommercial use under the **PolyForm Noncommercial License 1.0.0**. See [`LICENSE.md`](LICENSE.md) for the full terms.
+
+Commercial use, resale, paid client deployment, or use inside a commercial product or service is not granted by this license unless the copyright holder gives separate written permission.
+
+Required Notice: Copyright © 2026 Kevin Horst.
+
+## Project status
+
+This is a refactored portable build focused on preserving existing functionality while improving safety, settings, workflow clarity, and GitHub-readiness.
