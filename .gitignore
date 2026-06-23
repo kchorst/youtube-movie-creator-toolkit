@@ -1,0 +1,42 @@
+# Personal config / credentials — never commit
+cot_config.json
+master_config.json
+client_secrets.json
+token.json
+*.secret.json
+*.token.json
+
+# Runtime state and generated launchers
+launcher_log.txt
+child_stdout.log
+child_stderr.log
+*_runner.py
+*_launcher.bat
+last_run_*.json
+cot_config.corrupt.*.json
+
+# Python cache/build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output files / generated media metadata
+*.mp4
+upload_log.json
+youtube_uploads.csv
+seeds.json
+analytics*.csv
+quota_log.json
+*_old.txt
